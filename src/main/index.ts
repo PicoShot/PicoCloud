@@ -1,4 +1,5 @@
 import { app, shell, BrowserWindow, ipcMain, Menu, Tray } from "electron";
+import { autoUpdater } from "electron-updater";
 import { join } from "path";
 import { electronApp, optimizer, is } from "@electron-toolkit/utils";
 import icon from "../../resources/icon.png?asset";
@@ -50,8 +51,14 @@ ipcMain.on("close", () => {
   mainWindow?.hide();
 });
 
+ipcMain.on("restart_app", () => {
+  autoUpdater.quitAndInstall();
+});
+
 app.whenReady().then(() => {
   electronApp.setAppUserModelId("com.picoshot");
+
+  autoUpdater.checkForUpdatesAndNotify();
 
   app.on("browser-window-created", (_, window) => {
     optimizer.watchWindowShortcuts(window);
@@ -61,6 +68,20 @@ app.whenReady().then(() => {
 
   app.on("activate", function () {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
+  });
+
+  autoUpdater.autoDownload = true;
+
+  autoUpdater.on("update-available", () => {
+    mainWindow?.webContents.send("update_available");
+  });
+
+  autoUpdater.on("update-downloaded", () => {
+    mainWindow?.webContents.send("update_downloaded");
+  });
+
+  autoUpdater.on("error", (error) => {
+    mainWindow?.webContents.send("update_error", error.message);
   });
 
   tray = new Tray(trayIcon);
@@ -80,7 +101,9 @@ app.whenReady().then(() => {
     },
     {
       label: "Check for Updates...",
-      click: () => {},
+      click: () => {
+        autoUpdater.checkForUpdatesAndNotify();
+      },
     },
     {
       label: "Bugs Report",

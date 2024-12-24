@@ -1,8 +1,36 @@
 import { Outlet } from "react-router-dom";
 import { X, Minus } from "lucide-react";
+import { useEffect } from "react";
 import Particles from "@renderer/components/particles";
 
 export default function Layout() {
+  useEffect(() => {
+    window.electron.ipcRenderer.on("update_available", () => {
+      alert(
+        "A new update is available. It will be downloaded in the background.",
+      );
+    });
+
+    window.electron.ipcRenderer.on("update_downloaded", () => {
+      const confirmRestart = confirm(
+        "Update downloaded. The app will restart to install the update.",
+      );
+      if (confirmRestart) {
+        window.electron.ipcRenderer.send("restart_app");
+      }
+    });
+
+    window.electron.ipcRenderer.on("update_error", (_, errorMessage) => {
+      alert(`Error checking for updates: ${errorMessage}`);
+    });
+
+    return () => {
+      window.electron.ipcRenderer.removeAllListeners("update_available");
+      window.electron.ipcRenderer.removeAllListeners("update_downloaded");
+      window.electron.ipcRenderer.removeAllListeners("update_error");
+    };
+  }, []);
+
   const handleClose = () => {
     window.electron.ipcRenderer.send("close");
   };

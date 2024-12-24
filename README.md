@@ -1,6 +1,10 @@
-# picocloud
+# PicoCloud
 
-An Electron application with React and TypeScript
+PicoCloud is an open source cloud storage service using firebase, you can use it as your own cloud storage by creating a new firebase project and add your configuration file to the project
+
+# This project under the development
+
+nothing gonna work until the first release 1.0.0 version
 
 ## Recommended IDE Setup
 

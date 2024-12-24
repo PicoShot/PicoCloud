@@ -2,6 +2,6 @@ node_modules
 dist
 out
 .env
-firebase.ts*
+src/renderer/src/libs/firebase.ts
 .DS_Store
 *.log*
