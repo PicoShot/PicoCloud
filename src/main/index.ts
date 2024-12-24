@@ -107,7 +107,9 @@ app.whenReady().then(() => {
     },
     {
       label: "Bugs Report",
-      click: () => {},
+      click: () => {
+        shell.openExternal("https://github.com/PicoShot/PicoCloud/issues");
+      },
     },
     {
       type: "separator",
